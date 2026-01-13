@@ -1,1 +1,56 @@
-{"ultima_actualizacion": null, "total_partidos": 0, "partidos": [], "estadisticas": {"finalizados": 0, "supero_1_5": 0, "no_supero_1_5": 0, "en_vivo": 0}}
+{
+  "ultima_actualizacion": "2026-01-13 16:36:50",
+  "total_partidos": 2,
+  "partidos": [
+    {
+      "fecha": "2026-01-13",
+      "hora": "20:00",
+      "liga": "España - Copa del Rey",
+      "equipo_casa": "Dep. La Coruña",
+      "equipo_visitante": "Atlético Madrid",
+      "goles_casa": 0,
+      "goles_visitante": 1,
+      "minuto": 80,
+      "cuota_casa": "7.00",
+      "cuota_empate": "5.00",
+      "cuota_visitante": "1.37",
+      "prob_casa": "23",
+      "prob_empate": "33",
+      "prob_visitante": "44",
+      "tip": "2",
+      "hora_deteccion": "16:36:50",
+      "estado": "DETECTADO",
+      "goles_finales_casa": null,
+      "goles_finales_visitante": null,
+      "supero_1_5": null
+    },
+    {
+      "fecha": "2026-01-13",
+      "hora": "20:00",
+      "liga": "Inglaterra - EFL Cup",
+      "equipo_casa": "Newcastle",
+      "equipo_visitante": "Manchester City",
+      "goles_casa": 0,
+      "goles_visitante": 1,
+      "minuto": 77,
+      "cuota_casa": "2.65",
+      "cuota_empate": "3.60",
+      "cuota_visitante": "2.45",
+      "prob_casa": "34",
+      "prob_empate": "30",
+      "prob_visitante": "36",
+      "tip": "12",
+      "hora_deteccion": "16:36:50",
+      "estado": "DETECTADO",
+      "goles_finales_casa": null,
+      "goles_finales_visitante": null,
+      "supero_1_5": null
+    }
+  ],
+  "estadisticas": {
+    "finalizados": 0,
+    "supero_1_5": 0,
+    "no_supero_1_5": 0,
+    "en_vivo": 0
+  }
+}
