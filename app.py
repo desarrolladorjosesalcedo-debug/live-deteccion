@@ -40,12 +40,9 @@ scheduler.add_job(
     replace_existing=True
 )
 
-# Ejecutar scraping inicial al arrancar
-@app.before_first_request
-def scraping_inicial():
-    """Ejecuta el primer scraping al iniciar la aplicación"""
-    print("\n🚀 Ejecutando scraping inicial...")
-    ejecutar_scraping_un_gol()
+# Ejecutar scraping inicial al arrancar (compatible con Flask 3.0+)
+print("\n🚀 Ejecutando scraping inicial...")
+ejecutar_scraping_un_gol()
 
 @app.route('/')
 def index():
