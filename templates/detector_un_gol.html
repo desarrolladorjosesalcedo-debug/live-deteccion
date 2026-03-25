@@ -139,6 +139,72 @@
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
 
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .filter-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .date-inputs {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .date-group label {
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .date-group input[type="date"] {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+            min-width: 180px;
+        }
+
+        .date-group input[type="date"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-button {
+            margin-top: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .filter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
         .partidos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -408,6 +474,21 @@
             </div>
         </div>
 
+        <div class="filter-section">
+            <h3>🔍 Filtrar por Fecha</h3>
+            <div class="date-inputs">
+                <div class="date-group">
+                    <label for="fechaInicio">📅 Fecha de Inicio:</label>
+                    <input type="date" id="fechaInicio" />
+                </div>
+                <div class="date-group">
+                    <label for="fechaFin">📅 Fecha de Fin:</label>
+                    <input type="date" id="fechaFin" />
+                </div>
+                <button class="filter-button" onclick="filtrarPorFecha()">🔍 Filtrar</button>
+            </div>
+        </div>
+
         <div class="controls">
             <div class="countdown">
                 ⏱️ Próxima actualización en: <span id="countdown">5:00</span>
@@ -444,9 +525,25 @@
     <script>
         let countdownInterval;
         let autoRefreshInterval;
+        let partidosOriginales = [];
+
+        // Función para establecer fechas automáticamente
+        function establecerFechasAutomaticas() {
+            const hoy = new Date();
+            const hace8Dias = new Date();
+            hace8Dias.setDate(hoy.getDate() - 8);
+
+            // Formatear fechas al formato YYYY-MM-DD
+            const fechaFinStr = hoy.toISOString().split('T')[0];
+            const fechaInicioStr = hace8Dias.toISOString().split('T')[0];
+
+            document.getElementById('fechaInicio').value = fechaInicioStr;
+            document.getElementById('fechaFin').value = fechaFinStr;
+        }
 
         // Cargar partidos al iniciar
         window.onload = function() {
+            establecerFechasAutomaticas();
             cargarPartidos();
             iniciarCountdown();
             iniciarAutoRefresh();
@@ -456,6 +553,7 @@
             fetch('/api/detector/un-gol')
                 .then(response => response.json())
                 .then(data => {
+                    partidosOriginales = data.partidos || [];
                     actualizarEstadisticas(data);
                     mostrarPartidos(data.partidos);
                     
@@ -481,6 +579,44 @@
             document.getElementById('supero15').textContent = data.estadisticas?.supero_1_5 || 0;
             document.getElementById('noSupero15').textContent = data.estadisticas?.no_supero_1_5 || 0;
             document.getElementById('enVivo').textContent = data.estadisticas?.en_vivo || 0;
+        }
+
+        function filtrarPorFecha() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+
+            if (!fechaInicio || !fechaFin) {
+                alert('⚠️ Por favor selecciona ambas fechas');
+                return;
+            }
+
+            const fechaInicioDate = new Date(fechaInicio + 'T00:00:00');
+            const fechaFinDate = new Date(fechaFin + 'T23:59:59');
+
+            if (fechaInicioDate > fechaFinDate) {
+                alert('⚠️ La fecha de inicio no puede ser posterior a la fecha de fin');
+                return;
+            }
+
+            // Filtrar partidos por rango de fechas
+            const partidosFiltrados = partidosOriginales.filter(partido => {
+                const fechaPartido = new Date(partido.fecha + 'T' + partido.hora_deteccion);
+                return fechaPartido >= fechaInicioDate && fechaPartido <= fechaFinDate;
+            });
+
+            mostrarPartidos(partidosFiltrados);
+            
+            // Actualizar estadísticas filtradas
+            const finalizados = partidosFiltrados.filter(p => p.estado === 'FINALIZADO').length;
+            const supero = partidosFiltrados.filter(p => p.supero_1_5 === true).length;
+            const noSupero = partidosFiltrados.filter(p => p.supero_1_5 === false).length;
+            const enVivo = partidosFiltrados.length - finalizados;
+
+            document.getElementById('totalDetectados').textContent = partidosFiltrados.length;
+            document.getElementById('finalizados').textContent = finalizados;
+            document.getElementById('supero15').textContent = supero;
+            document.getElementById('noSupero15').textContent = noSupero;
+            document.getElementById('enVivo').textContent = enVivo;
         }
 
         function mostrarPartidos(partidos) {
